@@ -1,10 +1,10 @@
-Name: cockpit-starter-kit
+Name: cockpit-apcups
 Version: %{VERSION}
 Release: 1%{?dist}
-Summary: Cockpit Starter Kit Example Module
+Summary: Cockpit APCUPS overview
 License: LGPLv2+
 
-Source: cockpit-starter-kit-%{version}.tar.gz
+Source: cockpit-apcups-%{version}.tar.gz
 BuildArch: noarch
 BuildRequires:  libappstream-glib
 
@@ -13,10 +13,10 @@ Requires: cockpit-system
 %define debug_package %{nil}
 
 %description
-Cockpit Starter Kit Example Module
+Cockpit APC UPS status overview
 
 %prep
-%setup -n cockpit-starter-kit
+%setup -n cockpit-apcups
 
 %install
 %make_install

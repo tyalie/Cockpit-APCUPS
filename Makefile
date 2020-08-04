@@ -6,7 +6,7 @@ TEST_OS = centos-7
 endif
 export TEST_OS
 TARFILE=cockpit-$(PACKAGE_NAME)-$(VERSION).tar.gz
-RPMFILE=$(shell rpmspec -D"VERSION $(VERSION)" -q cockpit-starter-kit.spec.in).rpm
+RPMFILE=$(shell rpmspec -D"VERSION $(VERSION)" -q cockpit-apcups.spec.in).rpm
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 # stamp file to check if/when npm install ran
 NODE_MODULES_TEST=package-lock.json
@@ -137,11 +137,6 @@ $(VM_IMAGE): $(RPMFILE) bots
 vm: $(VM_IMAGE)
 	echo $(VM_IMAGE)
 
-# run the browser integration tests; skip check for SELinux denials
-# this will run all tests/check-* and format them as TAP
-check: $(NODE_MODULES_TEST) $(VM_IMAGE) test/common
-	TEST_AUDIT_NO_SELINUX=1 test/common/run-tests
-
 # checkout Cockpit's bots for standard test VM images and API to launch them
 # must be from master, as only that has current and existing images; but testvm.py API is stable
 # support CI testing against a bots change
@@ -149,13 +144,6 @@ bots:
 	git clone --quiet --reference-if-able $${XDG_CACHE_HOME:-$$HOME/.cache}/cockpit-project/bots https://github.com/cockpit-project/bots.git
 	if [ -n "$$COCKPIT_BOTS_REF" ]; then git -C bots fetch --quiet --depth=1 origin "$$COCKPIT_BOTS_REF"; git -C bots checkout --quiet FETCH_HEAD; fi
 	@echo "checked out bots/ ref $$(git -C bots rev-parse HEAD)"
-
-# checkout Cockpit's test API; this has no API stability guarantee, so check out a stable tag
-# when you start a new project, use the latest release, and update it from time to time
-test/common:
-	git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 220
-	git checkout --force FETCH_HEAD -- test/common
-	git reset test/common
 
 $(NODE_MODULES_TEST): package.json
 	# if it exists already, npm install won't update it; force that so that we always get up-to-date packages
